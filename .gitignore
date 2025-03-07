@@ -1,3 +1,11 @@
+# Download datasets
+data_prep/
+knowledge_graph/
+patients/
+preprocess/
+checkpoints/
+results/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -26,6 +34,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+lightning_logs/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
