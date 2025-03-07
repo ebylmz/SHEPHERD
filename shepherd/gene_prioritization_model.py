@@ -82,18 +82,18 @@ class CombinedGPAligner(pl.LightningModule):
         batch_sz, max_n_cand_genes = batch.batch_cand_gene_nid.shape
         cand_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_cand_gene_nid.view(-1)).view(batch_sz, max_n_cand_genes, -1)
 
-        if self.hparams.hparams['augment_genes']:            
-            print("Augmenting genes...", self.hparams.hparams['aug_gene_w'])
-            _, max_n_sim_cand_genes, k_sim_genes = batch.batch_sim_gene_nid.shape
-            sim_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_sim_gene_nid.view(-1)).view(batch_sz, max_n_sim_cand_genes, self.hparams.hparams['n_sim_genes'], -1)
-            agg_sim_gene_embedding = weighted_sum(sim_gene_embeddings, batch.batch_sim_gene_sims)
-            if self.hparams.hparams['aug_gene_by_deg']:
-                print("Augmenting gene by degree...")
-                aug_gene_w = self.hparams.hparams['aug_gene_w'] * torch.exp(-self.hparams.hparams['aug_gene_w'] * batch.batch_cand_gene_degs) + (1 - self.hparams.hparams['aug_gene_w'] - 0.1)
-                aug_gene_w = (aug_gene_w * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
-            else:
-                aug_gene_w = (self.hparams.hparams['aug_gene_w'] * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
-            cand_gene_embeddings = torch.mul(1 - aug_gene_w, cand_gene_embeddings) + torch.mul(aug_gene_w, agg_sim_gene_embedding)
+        # if self.hparams.hparams['augment_genes']:            
+        #     print("Augmenting genes...", self.hparams.hparams['aug_gene_w'])
+        #     _, max_n_sim_cand_genes, k_sim_genes = batch.batch_sim_gene_nid.shape
+        #     sim_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_sim_gene_nid.view(-1)).view(batch_sz, max_n_sim_cand_genes, self.hparams.hparams['n_sim_genes'], -1)
+        #     agg_sim_gene_embedding = weighted_sum(sim_gene_embeddings, batch.batch_sim_gene_sims)
+        #     if self.hparams.hparams['aug_gene_by_deg']:
+        #         print("Augmenting gene by degree...")
+        #         aug_gene_w = self.hparams.hparams['aug_gene_w'] * torch.exp(-self.hparams.hparams['aug_gene_w'] * batch.batch_cand_gene_degs) + (1 - self.hparams.hparams['aug_gene_w'] - 0.1)
+        #         aug_gene_w = (aug_gene_w * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
+        #     else:
+        #         aug_gene_w = (self.hparams.hparams['aug_gene_w'] * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
+        #     cand_gene_embeddings = torch.mul(1 - aug_gene_w, cand_gene_embeddings) + torch.mul(aug_gene_w, agg_sim_gene_embedding)
 
         # Patient Embedder with or without disease information
         if self.hparams.hparams['use_diseases']: 
@@ -300,13 +300,13 @@ class CombinedGPAligner(pl.LightningModule):
         batch_sz, max_n_cand_genes = batch.batch_cand_gene_nid.shape
         cand_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_cand_gene_nid.view(-1)).view(batch_sz, max_n_cand_genes, -1)
 
-        if self.hparams.hparams['augment_genes']:            
-            print("Augmenting genes at inference...", self.hparams.hparams['aug_gene_w'])
-            _, max_n_sim_cand_genes, k_sim_genes = batch.batch_sim_gene_nid.shape
-            sim_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_sim_gene_nid.view(-1)).view(batch_sz, max_n_sim_cand_genes, self.hparams.hparams['n_sim_genes'], -1)
-            agg_sim_gene_embedding = weighted_sum(sim_gene_embeddings, batch.batch_sim_gene_sims)        
-            aug_gene_w = (self.hparams.hparams['aug_gene_w'] * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
-            cand_gene_embeddings = torch.mul(1 - aug_gene_w, cand_gene_embeddings) + torch.mul(aug_gene_w, agg_sim_gene_embedding)
+        # if self.hparams.hparams['augment_genes']:            
+        #     print("Augmenting genes at inference...", self.hparams.hparams['aug_gene_w'])
+        #     _, max_n_sim_cand_genes, k_sim_genes = batch.batch_sim_gene_nid.shape
+        #     sim_gene_embeddings = torch.index_select(pad_outputs, 0, batch.batch_sim_gene_nid.view(-1)).view(batch_sz, max_n_sim_cand_genes, self.hparams.hparams['n_sim_genes'], -1)
+        #     agg_sim_gene_embedding = weighted_sum(sim_gene_embeddings, batch.batch_sim_gene_sims)        
+        #     aug_gene_w = (self.hparams.hparams['aug_gene_w'] * (torch.sum(batch.batch_sim_gene_sims, dim = -1) > 0)).unsqueeze(-1)
+        #     cand_gene_embeddings = torch.mul(1 - aug_gene_w, cand_gene_embeddings) + torch.mul(aug_gene_w, agg_sim_gene_embedding)
 
         # Patient Embedder with or without disease information
         if self.hparams.hparams['use_diseases']: 
